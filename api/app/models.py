@@ -69,3 +69,37 @@ class IngestSuggestion(BaseModel):
 class ApplyIngestRequest(BaseModel):
     suggestion: IngestSuggestion
 
+
+class SkillSyncRequest(BaseModel):
+    classes: list[ClassDef] = Field(default_factory=list)
+    objects: list[ObjectInstance] = Field(default_factory=list)
+    load_first: bool = True
+    reconcile: bool = True
+    augment_classes: bool = True
+    keep_extra_properties: bool = True
+    save: bool = True
+
+
+class SkillReconcileRequest(BaseModel):
+    load_first: bool = True
+    augment_classes: bool = True
+    keep_extra_properties: bool = True
+    save: bool = True
+
+
+class SkillSyncStats(BaseModel):
+    classes_created: int = 0
+    classes_updated: int = 0
+    objects_created: int = 0
+    objects_updated: int = 0
+    class_relations_added: int = 0
+    class_properties_added: int = 0
+    object_required_properties_filled: int = 0
+    object_properties_coerced: int = 0
+    object_relations_dropped: int = 0
+
+
+class SkillSyncResponse(BaseModel):
+    stats: SkillSyncStats
+    level1: Level1State
+    level2: Level2State

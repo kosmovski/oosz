@@ -11,6 +11,7 @@ from app.routers.health import router as health_router
 from app.routers.ingest import router as ingest_router
 from app.routers.level1 import router as level1_router
 from app.routers.level2 import router as level2_router
+from app.routers.skills import router as skills_router
 from app.routers.storage import router as storage_router
 from app.services.ingest_service import IngestService
 from app.services.model_service import ModelService
@@ -41,6 +42,7 @@ def create_app() -> FastAPI:
     app.include_router(level1_router)
     app.include_router(level2_router)
     app.include_router(ingest_router)
+    app.include_router(skills_router)
     app.include_router(storage_router)
 
     return app
