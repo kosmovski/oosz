@@ -54,7 +54,35 @@ curl -sS -X POST http://localhost:8000/level-1/classes \
   -d '{"name":"Person","properties":[],"relations":[]}'
 ```
 
-## 2) Створення об’єктів (рівень 2)
+## 2) Отримання інформації про класи
+
+**Список/пошук класів**
+- `GET /level-1/classes?q=...` — повертає всі класи або фільтрує за підрядком у назві.
+
+**Отримати клас за назвою**
+- `GET /level-1/classes/{name}`
+
+**Приклад**
+```bash
+curl -sS http://localhost:8000/level-1/classes/Person
+```
+
+## 3) Оновлення класів (коли структура неповна)
+
+**Endpoint**
+- `PATCH /level-1/classes/{name}`
+
+**Тіло запиту**
+- Повний `ClassDef` з актуальними `properties` та `relations`.
+
+**Приклад**
+```bash
+curl -sS -X PATCH http://localhost:8000/level-1/classes/Person \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Person","properties":[{"name":"age","type":"number","required":true}],"relations":[]}'
+```
+
+## 4) Створення об’єктів (рівень 2)
 
 **Endpoint**
 - `POST /level-2/objects`
@@ -104,7 +132,44 @@ curl -sS -X POST http://localhost:8000/level-2/objects \
   -d '{"name":"Alice","class_name":"Person","properties":{},"relations":[]}'
 ```
 
-## 3) Збереження у файли (після створення)
+## 5) Отримання інформації про об’єкти
+
+**Список/пошук об’єктів**
+- `GET /level-2/objects?q=...&class_name=...` — повертає всі або фільтрує за назвою/класом.
+
+**Отримати об’єкт за назвою**
+- `GET /level-2/objects/{name}`
+
+**Приклад**
+```bash
+curl -sS http://localhost:8000/level-2/objects/Alice
+```
+
+## 6) Оновлення об’єктів (коли властивості/зв’язки неповні)
+
+**Endpoint**
+- `PATCH /level-2/objects/{name}`
+
+**Тіло запиту**
+- Повний `ObjectInstance` з актуальними `properties` та `relations`.
+
+**Приклад**
+```bash
+curl -sS -X PATCH http://localhost:8000/level-2/objects/Alice \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Alice","class_name":"Person","properties":{"age":31},"relations":[]}'
+```
+
+## 7) Рекомендований порядок перевірки для нейромережі
+
+1. `GET /level-1/classes/{name}` — перевірити клас та його `properties/relations`.
+2. Якщо клас відсутній → `POST /level-1/classes`.
+3. Якщо клас є, але структура неповна → `PATCH /level-1/classes/{name}`.
+4. `GET /level-2/objects/{name}` — перевірити об’єкт та його `properties/relations`.
+5. Якщо об’єкта немає → `POST /level-2/objects`.
+6. Якщо об’єкт є, але неповний → `PATCH /level-2/objects/{name}`.
+
+## 8) Збереження у файли (після створення/оновлення)
 
 **Endpoint**
 - `POST /storage/save`
@@ -118,7 +183,7 @@ curl -sS -X POST http://localhost:8000/storage/save
 - `api/data/level1.json`
 - `api/data/level2.json`
 
-## 4) Опційно: “скім” для нейромережі
+## 9) Опційно: “скім” для нейромережі
 
 Якщо нейромережа створює/оновлює класи та об’єкти батчем:
 
